@@ -1,0 +1,16 @@
+{
+  "name": "channel-monitor-be",
+  "version": "1.0.0",
+  "description": "Backend of the iota mam channel monitor.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "iota",
+    "channel",
+    "mam"
+  ],
+  "author": "dominic22",
+  "license": "ISC"
+}
