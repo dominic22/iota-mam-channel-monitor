@@ -48,3 +48,12 @@
 .ant-list-item-meta-content {
   text-align: left;
 }
+
+.modal-body-container canvas {
+  margin: auto;
+  display: flex;
+}
+
+.modal-body-container p {
+  text-align: center;
+}

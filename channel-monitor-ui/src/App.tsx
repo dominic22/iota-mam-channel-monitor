@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import logo from "./logo.svg";
 import "./App.css";
-import { Button, Card, List, Avatar, Icon } from "antd";
+import { Button, Card, List, Avatar, Icon, Modal } from "antd";
 import "antd/dist/antd.css"; // or 'antd/dist/antd.less'
-var QRCode = require("qrcode");
+import * as iotaMam from "./utils/iota-mam";
+import ScanDialog from "./components/ScanDialog";
 
 const data = [
   {
-    title: "Ant Design Title 1",
+    title: "OnePlus Dominic",
     description: "Ant Design Title 1"
   },
   {
@@ -23,20 +24,8 @@ const data = [
     description: "Ant Design Title 4"
   }
 ];
-const createCanvas = (canvas:HTMLElement, channelRoot:string) => QRCode.toCanvas(canvas, channelRoot, function(error: any) {
-  if (error) console.error(error);
-  console.log("success!");
-})
 const App: React.FC = () => {
-
-  // Similar to componentDidMount and componentDidUpdate:
-  useEffect(() => {
-    const canvas = document.getElementById("canvas");
-    const channelRoot = 'TESTSEWADIOJAWOIDJAWAOWIDJOAIWJDOWAIDJ';
-    if(canvas) {
-      createCanvas(canvas, channelRoot);
-    }
-  });
+  const [channel, setChannel] = useState<any>(null);
 
   return (
     <div className="app">
@@ -48,10 +37,22 @@ const App: React.FC = () => {
           renderItem={item => (
             <List.Item
               actions={[
+                <a
+                  key="list-loadmore-eye"
+                  onClick={() => {
+                    console.log("CHANNEL", channel);
+
+                    if (channel) {
+                      iotaMam.readMam(channel);
+                    }
+                  }}
+                >
+                  <Icon type="eye" />
+                </a>,
                 <a key="list-loadmore-edit">
                   <Icon type="edit" />
                 </a>,
-                <a key="list-loadmore-edit">
+                <a key="list-loadmore-delete">
                   <Icon type="delete" />
                 </a>
               ]}
@@ -64,9 +65,7 @@ const App: React.FC = () => {
             </List.Item>
           )}
         />
-        <Button type="primary">Add Channel</Button>
-        <canvas id="canvas"></canvas>
-        
+        <ScanDialog></ScanDialog>
       </Card>
     </div>
   );
