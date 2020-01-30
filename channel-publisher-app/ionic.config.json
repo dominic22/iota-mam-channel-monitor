@@ -1,0 +1,7 @@
+{
+  "name": "channel-publisher-app",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react"
+}
