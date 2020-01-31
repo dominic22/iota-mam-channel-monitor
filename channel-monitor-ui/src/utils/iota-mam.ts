@@ -1,5 +1,6 @@
 import { trytesToAscii, asciiToTrytes } from "@iota/converter";
 import crypto from "crypto";
+import { rootCertificates } from "tls";
 const { composeAPI } = require("@iota/core");
 const {
   channelRoot,
@@ -47,16 +48,50 @@ export const initMamChannel = () => {
   return channelState;
 };
 
+export const createMamChannelBySeed = (seed:string) => {
+  const channelState = createChannel(seed, 2, mode, sideKey);
+  console.log("channelState", channelState);
+  return channelState;
+};
+
 // TODO use IMamChannelState type
-export const readMam = async (channelState: any) => {
+export const readAllMessages = async (nextRoot: any) => {
+  // Try fetching it as well.
+  console.log("Fetching from tangle, please wait...");
+  let root;
+  const fetched = await mamFetchAll(api, nextRoot, mode, sideKey, 20);
+  console.log('NUMBER OF MESSAGES ', fetched.length);
+  if (fetched && fetched.length > 0) {
+      for (let i = 0; i < fetched.length; i++) {
+          console.log('Fetched', trytesToAscii(fetched[i].message));
+      }
+      root = fetched[fetched.length - 1].nextRoot;
+  } else {
+      console.log('Nothing was fetched from the MAM channel');
+  }
+  return root;
+};
+
+// TODO use IMamChannelState type
+export const readMam = async (nextRoot: any) => {
+  // Try fetching it as well.
+  console.log("Fetching from tangle, please wait...");
+  const fetched = await mamFetch(api, nextRoot, mode, sideKey);
+  if (fetched) {
+    console.log("Fetched", JSON.parse(trytesToAscii(fetched.message)));
+  } else {
+    console.log("Nothing was fetched from the MAM channel");
+  }
+};
+
+export const publishMamMessage = async (channel:any) => {
   const payload = {
     message: "Hello MAM World!",
     timestamp: new Date().toLocaleString()
   };
-  debugger;
   // Create a MAM message using the channel state.
   const mamMessage = createMessage(
-    channelState,
+    channel,
     asciiToTrytes(JSON.stringify(payload))
   );
 
@@ -66,13 +101,4 @@ export const readMam = async (channelState: any) => {
   console.log(
     `You can view the mam channel here https://utils.iota.org/mam/${mamMessage.root}/${mode}/${sideKey}/devnet`
   );
-
-  // Try fetching it as well.
-  console.log("Fetching from tangle, please wait...");
-  const fetched = await mamFetch(api, mamMessage.root, mode, sideKey);
-  if (fetched) {
-    console.log("Fetched", JSON.parse(trytesToAscii(fetched.message)));
-  } else {
-    console.log("Nothing was fetched from the MAM channel");
-  }
-};
+}

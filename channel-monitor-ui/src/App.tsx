@@ -9,24 +9,44 @@ import ScanDialog from "./components/ScanDialog";
 const data = [
   {
     title: "OnePlus Dominic",
+    seed: "KVU9JNLDJMRL9NEGXAHQKPOUR9QNNQBTSRVGQQCTCLHENBGQPEAXENXSBLQLPLVGBOQWRYBVBRCHXKRSQ",
+    initialRoot: "MRGHFEPKIAWWVYYLCAJEZDFGIF9TXQKDNDZXOROYEIXCLUEKBQE9EYVSUJLLHBFYAHQCEFLBYVUOVQLLA",
+    nextRoot: "MRGHFEPKIAWWVYYLCAJEZDFGIF9TXQKDNDZXOROYEIXCLUEKBQE9EYVSUJLLHBFYAHQCEFLBYVUOVQLLA",
     description: "Ant Design Title 1"
   },
   {
-    title: "Ant Design Title 2",
+    title: "Iphone 8 Peter",
+    seed:"KVU9JNLDJMRL9NEGXAHQKPOUR9QNNQBTSRVGQQCTCLHENBGQPEAXENXSBLQLPLVGBOQWRYBVBRCHXKRSQ",
+    initialRoot: "MRGHFEPKIAWWVYYLCAJEZDFGIF9TXQKDNDZXOROYEIXCLUEKBQE9EYVSUJLLHBFYAHQCEFLBYVUOVQLLA",
+    nextRoot: "MRGHFEPKIAWWVYYLCAJEZDFGIF9TXQKDNDZXOROYEIXCLUEKBQE9EYVSUJLLHBFYAHQCEFLBYVUOVQLLA",
     description: "Ant Design Title 2"
   },
   {
-    title: "Ant Design Title 3",
+    title: "Test phone",
+    seed:"KVU9JNLDJMRL9NEGXAHQKPOUR9QNNQBTSRVGQQCTCLHENBGQPEAXENXSBLQLPLVGBOQWRYBVBRCHXKRSQ",
+    initialRoot: "MRGHFEPKIAWWVYYLCAJEZDFGIF9TXQKDNDZXOROYEIXCLUEKBQE9EYVSUJLLHBFYAHQCEFLBYVUOVQLLA",
+    nextRoot: "MRGHFEPKIAWWVYYLCAJEZDFGIF9TXQKDNDZXOROYEIXCLUEKBQE9EYVSUJLLHBFYAHQCEFLBYVUOVQLLA",
     description: "Ant Design Title 3"
   },
-  {
-    title: "Ant Design Title 4",
-    description: "Ant Design Title 4"
-  }
 ];
-const App: React.FC = () => {
-  const [channel, setChannel] = useState<any>(null);
 
+const App: React.FC = () => {
+  const [newChannel, setChannel] = useState<any>(null);
+  const [currentSeed, setCurrentSeed] = useState<string | null>(null);
+  const [isModalVisible, setModalVisibility] = useState<any>(null);
+
+  const showModal = () => {
+    setModalVisibility(true);
+  };
+
+  const handleOk = () => {
+    setModalVisibility(false);
+  };
+
+  const handleCancel = () => {
+    setModalVisibility(false);
+  };
+  
   return (
     <div className="app">
       <h3>Subscribed Channels</h3>
@@ -40,20 +60,29 @@ const App: React.FC = () => {
                 <a
                   key="list-loadmore-eye"
                   onClick={() => {
-                    console.log("CHANNEL", channel);
-
-                    if (channel) {
-                      iotaMam.readMam(channel);
-                    }
+                    console.log('channelxx', item.nextRoot);
+                    iotaMam.readAllMessages(item.nextRoot);
                   }}
                 >
                   <Icon type="eye" />
                 </a>,
-                <a key="list-loadmore-edit">
-                  <Icon type="edit" />
+                <a key="list-loadmore-edit"
+                onClick={() => {
+                  setCurrentSeed(item.seed);
+                  showModal();
+                }}
+                >
+                  <Icon type="info-circle" />
                 </a>,
-                <a key="list-loadmore-delete">
-                  <Icon type="delete" />
+                <a key="list-loadmore-add"
+                onClick={() => {
+                  const channel = iotaMam.createMamChannelBySeed(item.seed);
+                  if (channel) {
+                    console.log('channelxx', channel);
+                    iotaMam.publishMamMessage(channel);
+                  }
+                }}>
+                  <Icon type="plus" />
                 </a>
               ]}
             >
@@ -65,7 +94,22 @@ const App: React.FC = () => {
             </List.Item>
           )}
         />
-        <ScanDialog></ScanDialog>
+        <Button
+        type="primary"
+        onClick={() => {
+          const newChannel = iotaMam.initMamChannel();
+          setChannel(newChannel);
+          setCurrentSeed(newChannel.seed);
+          showModal();
+        }}
+      >
+        Add Channel
+      </Button>
+        <ScanDialog
+          seed={currentSeed}
+          isVisible={isModalVisible}
+          handleCancel={handleCancel}
+        ></ScanDialog>
       </Card>
     </div>
   );
