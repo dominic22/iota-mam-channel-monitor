@@ -3,38 +3,26 @@ import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar,
   IonFab, IonFabButton, IonIcon, IonGrid, IonRow,  IonList, IonLabel, IonItem,
   IonCol, IonImg, IonActionSheet } from '@ionic/react';
   import { camera, trash, close } from 'ionicons/icons';
-import { QRScanner, QRScannerStatus } from '@ionic-native/qr-scanner';
+//import { QRScanner, QRScannerStatus } from '@ionic-native/qr-scanner';
 
-const scanQRCode = () => {
-  QRScanner.prepare()
-    .then((status: QRScannerStatus) => {
-       if (status.authorized) {
-         // camera permission was granted
-  
-  
-         // start scanning
-         let scanSub = QRScanner.scan().subscribe((text: string) => {
-           console.log('Scanned something', text);
-  
-           QRScanner.hide(); // hide camera preview
-           scanSub.unsubscribe(); // stop scanning
-         });
-  
-       } else if (status.denied) {
-         // camera permission was permanently denied
-         // you must use QRScanner.openSettings() method to guide the user to the settings page
-         // then they can grant the permission from there
-       } else {
-         // permission was denied, but not permanently. You can ask for permission again at a later time.
-       }
-    })
-    .catch((e: any) => console.log('Error is', e));
-}
+declare let window: any; // Don't forget this part!
+
 
 // declare let window: any; // Don't forget this part!
 const Tab2: React.FC = () => {
   // Optionally request the permission early
-  
+  const scanQRCode = () => {
+    window.cordova.plugins.barcodeScanner.scan(
+      (result:any) => console.log(result),
+      (err:any) => console.error(err),
+      {
+        showTorchButton: true,
+        prompt: "Scan your code",
+        formats: "QR_CODE",
+        resultDisplayDuration: 0
+      }
+    );
+  }
   return (
     <IonPage>
       <IonHeader>
@@ -46,7 +34,7 @@ const Tab2: React.FC = () => {
         <IonList>
           <IonItem routerLink="/tab2/details">
             <IonLabel>
-              <h2>Go to detail</h2>
+              <h2>Press the button below to scan the QR code</h2>
             </IonLabel>
           </IonItem>
         </IonList>
