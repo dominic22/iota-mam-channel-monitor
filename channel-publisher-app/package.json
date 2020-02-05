@@ -11,6 +11,8 @@
     "@ionic/react": "^4.11.8",
     "@ionic/react-hooks": "0.0.6",
     "@ionic/react-router": "^4.11.8",
+    "@iota/converter": "^1.0.0-beta.23",
+    "@iota/mam.js": "github:iotaledger/mam.js",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.4.0",
     "@testing-library/user-event": "^8.0.3",
